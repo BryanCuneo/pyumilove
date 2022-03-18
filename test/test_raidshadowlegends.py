@@ -1,9 +1,9 @@
 import unittest
 from bs4 import BeautifulSoup
 
-from character import Character
-from raidshadowlegends import Champion, RSL
-from skill import Skill
+from src.pyumilove.character import Character
+from src.pyumilove.raidshadowlegends import Champion, RSL
+from src.pyumilove.skill import Skill
 
 
 class TestRSL(unittest.TestCase):

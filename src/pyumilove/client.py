@@ -2,8 +2,8 @@ import asyncio
 import aiohttp
 from bs4 import BeautifulSoup
 
-from character import Character
-from skill import Skill
+from .character import Character
+from .skill import Skill
 
 
 class AyumiLoveClient:

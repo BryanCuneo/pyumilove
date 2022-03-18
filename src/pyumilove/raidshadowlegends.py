@@ -1,8 +1,8 @@
 import asyncio
 from dataclasses import asdict, dataclass
 
-from character import Character
-from client import AyumiLoveClient
+from .character import Character
+from .client import AyumiLoveClient
 
 
 @dataclass

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from skill import Skill
+from .skill import Skill
 
 
 @dataclass
