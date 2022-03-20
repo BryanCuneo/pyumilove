@@ -85,3 +85,11 @@ class AyumiLoveClient:
                 element = element.next_sibling.next_sibling
 
         return result
+
+    async def _get_table_links(self, url, section):
+        soup = await self._get_soup(url)
+        links = soup.find("h4", text=section).next_sibling.next_sibling.findChildren(
+            "a"
+        )
+
+        return {elem.text: "https:" + elem["href"] for elem in links}

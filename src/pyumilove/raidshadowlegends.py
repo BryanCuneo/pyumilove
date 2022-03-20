@@ -12,13 +12,15 @@ class Champion(Character):
     books: int
 
     @classmethod
-    def from_parent(self, parent_instance, role, affinity, books):
+    def from_parent(cls, parent_instance, role, affinity, books):
         new_attributes = {"role": role, "affinity": affinity, "books": books}
 
-        return self(**asdict(parent_instance), **new_attributes)
+        return cls(**asdict(parent_instance), **new_attributes)
 
 
 class RSL(AyumiLoveClient):
+    _rsl_url = AyumiLoveClient._base_url + "/raid-shadow-legends-guide"
+
     @staticmethod
     def build_character_from_soup(soup, url):
         details = [t.strip() for t in soup.tr.p.text.split("\n")]
@@ -40,3 +42,9 @@ class RSL(AyumiLoveClient):
         champ_soup = await self._get_soup(champ_url)
 
         return RSL.build_character_from_soup(champ_soup, champ_url)
+
+    async def buffs(self):
+        return await self._get_table_links(RSL._rsl_url, "Buff")
+
+    async def debuffs(self):
+        return await self._get_table_links(RSL._rsl_url, "Debuff")

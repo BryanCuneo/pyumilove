@@ -11,13 +11,15 @@ class Hero(Character):
     heroType: str
 
     @classmethod
-    def from_parent(self, parent_instance, element, heroType):
+    def from_parent(cls, parent_instance, element, heroType):
         new_attributes = {"element": element, "heroType": heroType}
 
-        return self(**asdict(parent_instance), **new_attributes)
+        return cls(**asdict(parent_instance), **new_attributes)
 
 
 class ACE(AyumiLoveClient):
+    _ace_url = AyumiLoveClient._base_url + "/awaken-chaos-era-guide"
+
     @staticmethod
     def build_character_from_soup(soup, url):
         details = [t.strip() for t in soup.tr.p.text.split("\n")]
@@ -37,3 +39,9 @@ class ACE(AyumiLoveClient):
         hero_soup = await self._get_soup(hero_url)
 
         return ACE.build_character_from_soup(hero_soup, hero_url)
+
+    async def buffs(self):
+        return await self._get_table_links(ACE._ace_url, "Buff (Positive Effect)")
+
+    async def debuffs(self):
+        return await self._get_table_links(ACE._ace_url, "Debuff (Negative Effect)")
