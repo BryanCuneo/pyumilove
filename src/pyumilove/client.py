@@ -42,9 +42,9 @@ class AyumiLoveClient:
         details = [t.strip() for t in soup.tr.p.text.split("\n")]
 
         return Character(
-            name=details[0].split(": ", 1)[-1],
-            faction=details[1].split(": ", 1)[-1],
-            rarity=details[2].split(": ", 1)[-1],
+            name=details[0].partition(": ")[2],
+            faction=details[1].partition(": ")[2],
+            rarity=details[2].partition(": ")[2],
             skills=AyumiLoveClient.build_skills_from_soup(soup),
             url=url,
         )

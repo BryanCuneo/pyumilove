@@ -25,10 +25,10 @@ class RSL(AyumiLoveClient):
     def build_character_from_soup(soup, url):
         details = [t.strip() for t in soup.tr.p.text.split("\n")]
 
-        role = details[3].split(": ", 1)[-1]
-        affinity = details[4].split(": ", 1)[-1]
-        books = details[6].split(": ", 1)[-1]
-        books = int(books.split(" ", 1)[0])
+        role = details[3].partition(": ")[2]
+        affinity = details[4].partition(": ")[2]
+        books = details[6].partition(": ")[2]
+        books = int(books.partition(" ")[0])
 
         return Champion.from_parent(
             super(RSL, RSL).build_character_from_soup(soup, url), role, affinity, books

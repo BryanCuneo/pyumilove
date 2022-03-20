@@ -24,8 +24,8 @@ class ACE(AyumiLoveClient):
     def build_character_from_soup(soup, url):
         details = [t.strip() for t in soup.tr.p.text.split("\n")]
 
-        element = details[3].split(": ", 1)[-1]
-        heroType = details[4].split(": ", 1)[-1]
+        element = details[3].partition(": ", 1)[2]
+        heroType = details[4].partition(": ", 1)[2]
 
         return Hero.from_parent(
             super(ACE, ACE).build_character_from_soup(soup, url), element, heroType
