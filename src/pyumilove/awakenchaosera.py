@@ -21,7 +21,7 @@ class ACE(AyumiLoveClient):
     _ace_url = AyumiLoveClient._base_url + "/awaken-chaos-era-guide"
 
     @staticmethod
-    def build_character_from_soup(soup, url):
+    def build_hero_from_soup(soup, url):
         details = [t.strip() for t in soup.tr.p.text.split("\n")]
 
         element = details[3].partition(": ")[2]
@@ -34,11 +34,14 @@ class ACE(AyumiLoveClient):
     def __init__(self):
         super().__init__(AyumiLoveClient.AWAKEN_CHAOS_ERA)
 
-    async def hero_search(self, hero_name):
-        hero_url = await self.search(hero_name)
-        hero_soup = await self._get_soup(hero_url)
+    async def get_hero(self, hero_name):
+        url, soup = await self.get_character_page(hero_name)
+        try:
+            hero = ACE.build_hero_from_soup(soup, url)
+        except AttributeError:
+            hero = None
 
-        return ACE.build_character_from_soup(hero_soup, hero_url)
+        return hero
 
     async def buffs(self):
         return await self._get_table_links(ACE._ace_url, "Buff (Positive Effect)")
