@@ -22,7 +22,7 @@ class RSL(AyumiLoveClient):
     _rsl_url = AyumiLoveClient._base_url + "/raid-shadow-legends-guide"
 
     @staticmethod
-    def build_character_from_soup(soup, url):
+    def build_champion_from_soup(soup, url):
         details = [t.strip() for t in soup.tr.p.text.split("\n")]
 
         role = details[3].partition(": ")[2]
@@ -35,13 +35,16 @@ class RSL(AyumiLoveClient):
         )
 
     def __init__(self):
-        super().__init__("raid shadow legends")
+        super().__init__(AyumiLoveClient.RAID_SHADOW_LEGENDS)
 
-    async def champ_search(self, champ_name):
-        champ_url = await self.search(champ_name)
-        champ_soup = await self._get_soup(champ_url)
+    async def get_champion(self, champ_name):
+        url, soup = await self.get_character_page(champ_name)
+        try:
+            champ = RSL.build_champion_from_soup(soup, url)
+        except AttributeError:
+            champ = None
 
-        return RSL.build_character_from_soup(champ_soup, champ_url)
+        return champ
 
     async def buffs(self):
         return await self._get_table_links(RSL._rsl_url, "Buff")
