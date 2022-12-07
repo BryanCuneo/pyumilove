@@ -3,13 +3,13 @@ import unittest
 from bs4 import BeautifulSoup
 
 from src.pyumilove.character import Character
-from src.pyumilove.raidshadowlegends import Champion, RSL
+from src.pyumilove.raidshadowlegends import Champion, Blessing, RSL
 from src.pyumilove.skill import Skill
 
 
 class TestRSL(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
-        data = """<!DOCTYPE html><html><body><article><header><h1 class="entry-title">Siphi the Lost Bride | Raid Shadow Legends</h1></header><div><table><tbody><tr><td><h4>Overview</h4><p>NAME: Siphi the Lost Bride<br/>
+        champ_data = """<!DOCTYPE html><html><body><article><header><h1 class="entry-title">Siphi the Lost Bride | Raid Shadow Legends</h1></header><div><table><tbody><tr><td><h4>Overview</h4><p>NAME: Siphi the Lost Bride<br/>
 FACTION: <a href="//ayumilove.net/raid-shadow-legends-list-of-champions-by-faction/#undeadhordes">Undead Hordes</a><br/>
 RARITY: <a href="//ayumilove.net/raid-shadow-legends-list-of-champions-by-rarity/#legendary">Legendary</a><br/>
 ROLE: <a href="//ayumilove.net/raid-shadow-legends-list-of-champions-by-role/#support">Support</a><br/>
@@ -41,7 +41,30 @@ Level 3: Buff/Debuff Chance +5%</p>
 Increases Ally RESIST in all Battles by 80.</p>
 <p><input type="hidden" name="IL_IN_ARTICLE"></p></div></article></body></html>
 """
-        self.soup = BeautifulSoup(data, "lxml")
+
+        blessings_data = """<!DOCTYPE html><html><body><div class="entry-content"><table><tbody><tr><td style="text-align:center" width="15%"><strong>Icon</strong></td><td style="text-align:center" width="90%"><strong>Rare Light Blessings Description</strong></td></tr>
+<tr>
+<td><img class="lazy loaded" decoding="async" src="//ayumilove.net/files/games/raid_shadow_legends/blessing/Indomitable_Spirit.jpg" data-src="//ayumilove.net/files/games/raid_shadow_legends/blessing/Indomitable_Spirit.jpg" alt="Indomitable Spirit - Raid Shadow Legends Rare Light Blessings" data-was-processed="true" width="188" height="247"></td>
+<td>
+<h4 id="indomitable-spirit">Indomitable Spirit</h4>
+<ul>
+<li>Has a chance of blocking any [Stun], [Sleep], and [Fear] debuffs whenever an enemy tries to place them on this Champion.</li>
+</ul>
+<h4>Awakening Level</h4>
+<ol>
+<li>5% chance of blocking debuffs</li>
+<li>DEF +200 (+200 to Legendary Champions)</li>
+<li>10% chance of blocking debuffs</li>
+<li>HP +1000. ACC +30 (+20 to Legendary Champions)</li>
+<li>15% chance of blocking debuffs</li>
+<li>20% chance of blocking debuffs. SPD +5 (+5 to Legendary Champions)</li>
+</ol>
+<h4>Who should use this blessing?</h4>
+<p>Indomitable Spirit blessing is utilized to block crowd control debuff from being applied to your champion by the enemies. The downside of this blessing is the success rate of blocking is low and it does not block all crowd control debuff. It’s recommended to go with a blessing that could provide increased Resist stat along with a wider range of crowd control debuff to be blocked, such as <a href="//ayumilove.net/raid-shadow-legends-champion-blessings-guide/#dark-resolve">Dark Resolve</a>. Having a high resistance stat will allow your champion to block all types of debuffs consistently and effectively making your battles more predictable.
+</p></td></tr></tbody></table></div></body></html>
+"""
+
+        self.champ_soup = BeautifulSoup(champ_data, "lxml")
         self.siphi_url = "https://ayumilove.net/raid-shadow-legends-siphi-the-lost-bride-skill-mastery-equip-guide/"
 
         self.champs_exact_names = {
@@ -55,6 +78,16 @@ Increases Ally RESIST in all Battles by 80.</p>
             "Bad-el-Kazar": "https://ayumilove.net/raid-shadow-legends-bad-el-kazar-skill-mastery-equip-guide/",
             "Ma'Shalled": "https://ayumilove.net/raid-shadow-legends-mashalled-skill-mastery-equip-guide/",
         }
+
+        self.blessings_soup = BeautifulSoup(blessings_data, "lxml")
+        self.blessing_upgrades = [
+            "5% chance of blocking debuffs",
+            "DEF +200 (+200 to Legendary Champions)",
+            "10% chance of blocking debuffs",
+            "HP +1000. ACC +30 (+20 to Legendary Champions)",
+            "15% chance of blocking debuffs",
+            "20% chance of blocking debuffs. SPD +5 (+5 to Legendary Champions)",
+        ]
 
     def test_build_skills_from_soup(self):
         names = [
@@ -85,7 +118,7 @@ Increases Ally RESIST in all Battles by 80.</p>
             [],
         ]
 
-        skills = RSL.build_skills_from_soup(self.soup)
+        skills = RSL.build_skills_from_soup(self.champ_soup)
 
         self.assertEqual(len(skills), 5)
 
@@ -98,7 +131,7 @@ Increases Ally RESIST in all Battles by 80.</p>
                 self.assertEqual(skills[i].upgrades, upgrades[i])
 
     def test_build_champion_from_soup(self):
-        champion = RSL.build_champion_from_soup(self.soup, self.siphi_url)
+        champion = RSL.build_champion_from_soup(self.champ_soup, self.siphi_url)
 
         self.assertIsInstance(champion, Character)
         self.assertIsInstance(champion, Champion)
@@ -155,3 +188,21 @@ Increases Ally RESIST in all Battles by 80.</p>
 
             with self.assertRaises(AttributeError):
                 client.build_champion_from_soup(no_soup, None)
+
+    async def test_blessings(self):
+
+        async with RSL() as client:
+
+            blessing = await client._parse_blessings_table_soup(self.blessings_soup)[0]
+            self.assertIsInstance(blessing, Blessing)
+            self.assertEqual(blessing.name, "Indomitable Spirit")
+            self.assertEqual(
+                blessing.description,
+                "Has a chance of blocking any [Stun], [Sleep], and [Fear] debuffs whenever an enemy tries to place them on this Champion.",
+            )
+            self.assertCountEqual(blessing.awakening_levels, 6)
+            self.assertEqual(blessing.awakening_levels, self.blessing_upgrades)
+            self.assertEqual(
+                blessing.image_url,
+                "https://ayumilove.net/files/games/raid_shadow_legends/blessing/Indomitable_Spirit.jpg",
+            )

@@ -18,8 +18,35 @@ class Champion(Character):
         return cls(**asdict(parent_instance), **new_attributes)
 
 
+@dataclass
+class Blessing:
+    name: str
+    description: str
+    upgrades: list[str]
+    image_url: str
+
+    @classmethod
+    def from_soup_table_row(cls, table_row):
+        name = table_row.h4.text
+        description = table_row.ul.li.text
+        upgrades = [item.text for item in table_row.ol.find_all("li")]
+        url = "http:" + table_row.img["src"]
+
+        new_attributes = {
+            "name": name,
+            "description": description,
+            "upgrades": upgrades,
+            "image_url": url,
+        }
+
+        return cls(**new_attributes)
+
+
 class RSL(AyumiLoveClient):
     _rsl_url = AyumiLoveClient._base_url + "/raid-shadow-legends-guide"
+    _blessings_url = (
+        AyumiLoveClient._base_url + "/raid-shadow-legends-champion-blessings-guide"
+    )
 
     @staticmethod
     def build_champion_from_soup(soup, url):
