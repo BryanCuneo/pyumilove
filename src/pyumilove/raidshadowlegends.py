@@ -9,11 +9,17 @@ from .client import AyumiLoveClient
 class Champion(Character):
     role: str
     affinity: str
+    rank: chr
     books: int
 
     @classmethod
-    def from_parent(cls, parent_instance, role, affinity, books):
-        new_attributes = {"role": role, "affinity": affinity, "books": books}
+    def from_parent(cls, parent_instance, role, affinity, rank, books):
+        new_attributes = {
+            "role": role,
+            "affinity": affinity,
+            "rank": rank,
+            "books": books,
+        }
 
         return cls(**asdict(parent_instance), **new_attributes)
 
@@ -54,11 +60,16 @@ class RSL(AyumiLoveClient):
 
         role = details[3].partition(": ")[2]
         affinity = details[4].partition(": ")[2]
-        books = details[6].partition(": ")[2]
+        rank = details[5].partition(": ")[2]
+        books = details[7].partition(": ")[2]
         books = int(books.partition(" ")[0])
 
         return Champion.from_parent(
-            super(RSL, RSL).build_character_from_soup(soup, url), role, affinity, books
+            super(RSL, RSL).build_character_from_soup(soup, url),
+            role,
+            affinity,
+            rank,
+            books,
         )
 
     def __init__(self):
