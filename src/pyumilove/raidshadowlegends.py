@@ -28,20 +28,20 @@ class Champion(Character):
 class Blessing:
     name: str
     description: str
-    upgrades: list[str]
+    awakening_levels: list[str]
     image_url: str
 
     @classmethod
     def from_soup_table_row(cls, table_row):
         name = table_row.h4.text
         description = table_row.ul.li.text
-        upgrades = [item.text for item in table_row.ol.find_all("li")]
+        awakening_levels = [item.text for item in table_row.ol.find_all("li")]
         url = "http:" + table_row.img["src"]
 
         new_attributes = {
             "name": name,
             "description": description,
-            "upgrades": upgrades,
+            "awakening_levels": awakening_levels,
             "image_url": url,
         }
 
@@ -72,8 +72,20 @@ class RSL(AyumiLoveClient):
             books,
         )
 
+    @staticmethod
+    def _build_blessings_from_soup(blessings_soup):
+        # First row in the table is a header. Ignore it
+        rows = [row for row in blessings_soup.find_all("tr") if row.h4]
+        blessings = [Blessing.from_soup_table_row(row) for row in rows]
+
+        return blessings
+
     def __init__(self):
         super().__init__(AyumiLoveClient.RAID_SHADOW_LEGENDS)
+
+    async def _get_blessings(self):
+        soup = await self._get_soup(self._blessings_url)
+        return self._build_blessings_from_soup(soup)
 
     async def get_champion(self, champ_name):
         url, soup = await self.get_character_page(champ_name)
@@ -89,3 +101,6 @@ class RSL(AyumiLoveClient):
 
     async def debuffs(self):
         return await self._get_table_links(RSL._rsl_url, "Debuff")
+
+    async def blessings(self):
+        return await self._get_blessings()

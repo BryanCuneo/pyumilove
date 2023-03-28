@@ -14,6 +14,7 @@ FACTION: <a href="//ayumilove.net/raid-shadow-legends-list-of-champions-by-facti
 RARITY: <a href="//ayumilove.net/raid-shadow-legends-list-of-champions-by-rarity/#legendary">Legendary</a><br/>
 ROLE: <a href="//ayumilove.net/raid-shadow-legends-list-of-champions-by-role/#support">Support</a><br/>
 AFFINITY: <a href="//ayumilove.net/raid-shadow-legends-list-of-champions-by-affinity/#void">Void</a><br/>
+RANK: <a href="//ayumilove.net/raid-shadow-legends-list-of-champions-by-ranking/#legendary">S</a><br/>
 USABILITY: Early-Mid-Late Game<br/>
 TOMES: 10 (A1 A2 A3)</p><h4>Total Stats (6★)</h4> <p>Health Points (HP): 21,480<br/> Attack (ATK): 859<br/> Defense (DEF): 1,288<br/> Speed (SPD): 114<br/> Critical Rate (C.RATE): 15%<br/> Critical Damage (C.DMG): 50%<br/> Debuff Resistance (RESIST): 40<br/> Debuff Accuracy (ACC): 0</p><h4>Obtain from</h4> <p>Void Shard </td><td width="50%"> <h4>Grinding</h4> <p>★★★★✰ Campaign<br/> ★★★★★ Arena Defense<br/> ★★★★★ Arena Offense<br/> ★★★★★ Clan Boss<br/> ★★★★★ Faction Wars</p><h4>Dungeons</h4> <p>★★★★★ Minotaur<br/> ★★★★★ Spider<br/> ★★★★✰ Fire Knight<br/> ★★★★★ Dragon<br/> ★★★★★ Ice Golem</p><h4>Potion</h4> <p>★★★★★ Arcane Keep<br/> ★★★★★ Void Keep<br/> ★★★★★ Force Keep<br/> ★★★★★ Spirit Keep<br/> ★★★★★ Magic Keep</p><h4>Doom Tower</h4> <p>★★★★★ Floors<br/> ★★★★★ Magma Dragon<br/> ★★★★★ Nether Spider<br/> ★★★★★ Frost Spider<br/> ★★★★★ Scarab King<br/> ★✰✰✰✰ Celestial Griffin<br/> ★★★★★ Eternal Dragon<br/> ★★★★★ Dreadhorn<br/> ★★★✰✰ Dark Fae </td></tr></tbody></table>
 <div id="AyumiloveArticleAd"></div>
@@ -70,13 +71,13 @@ Increases Ally RESIST in all Battles by 80.</p>
         self.champs_exact_names = {
             "avirthealchemage": "https://ayumilove.net/raid-shadow-legends-avir-the-alchemage-skill-mastery-equip-guide/",
             "badelkazar": "https://ayumilove.net/raid-shadow-legends-bad-el-kazar-skill-mastery-equip-guide/",
-            "mashalled": "https://ayumilove.net/raid-shadow-legends-mashalled-skill-mastery-equip-guide/",
+            "bigun": "https://ayumilove.net/raid-shadow-legends-big-un-skill-mastery-equip-guide/",
         }
 
         self.champs_original_names = {
             "Avir the Alchemage": "https://ayumilove.net/raid-shadow-legends-avir-the-alchemage-skill-mastery-equip-guide/",
             "Bad-el-Kazar": "https://ayumilove.net/raid-shadow-legends-bad-el-kazar-skill-mastery-equip-guide/",
-            "Ma'Shalled": "https://ayumilove.net/raid-shadow-legends-mashalled-skill-mastery-equip-guide/",
+            "Big ‘Un": "https://ayumilove.net/raid-shadow-legends-big-un-skill-mastery-equip-guide/",
         }
 
         self.blessings_soup = BeautifulSoup(blessings_data, "lxml")
@@ -141,6 +142,7 @@ Increases Ally RESIST in all Battles by 80.</p>
         self.assertEqual(champion.rarity, "Legendary")
         self.assertEqual(champion.role, "Support")
         self.assertEqual(champion.affinity, "Void")
+        self.assertEqual(champion.rank, "S")
         self.assertEqual(champion.books, 10)
         self.assertEqual(champion.url, self.siphi_url)
 
@@ -193,16 +195,21 @@ Increases Ally RESIST in all Battles by 80.</p>
 
         async with RSL() as client:
 
-            blessing = await client._parse_blessings_table_soup(self.blessings_soup)[0]
+            blessings = client._build_blessings_from_soup(self.blessings_soup)
+            blessing = blessings[0]
+            self.assertIsInstance(blessings, list)
             self.assertIsInstance(blessing, Blessing)
             self.assertEqual(blessing.name, "Indomitable Spirit")
             self.assertEqual(
                 blessing.description,
                 "Has a chance of blocking any [Stun], [Sleep], and [Fear] debuffs whenever an enemy tries to place them on this Champion.",
             )
-            self.assertCountEqual(blessing.awakening_levels, 6)
+            self.assertEqual(len(blessing.awakening_levels), 6)
             self.assertEqual(blessing.awakening_levels, self.blessing_upgrades)
             self.assertEqual(
                 blessing.image_url,
-                "https://ayumilove.net/files/games/raid_shadow_legends/blessing/Indomitable_Spirit.jpg",
+                "http://ayumilove.net/files/games/raid_shadow_legends/blessing/Indomitable_Spirit.jpg",
             )
+
+            blessings = await client.blessings()
+            self.assertEqual(len(blessings), 24)
