@@ -1,9 +1,9 @@
 import unittest
 from bs4 import BeautifulSoup
 
-from src.pyumilove.character import Character
-from src.pyumilove.awakenchaosera import Hero, ACE
-from src.pyumilove.skill import Skill
+from pyumilove.character import Character
+from pyumilove.awakenchaosera import Hero, ACE
+from pyumilove.skill import Skill
 
 
 class TestACE(unittest.IsolatedAsyncioTestCase):

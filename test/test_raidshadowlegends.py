@@ -2,9 +2,9 @@ import unittest
 
 from bs4 import BeautifulSoup
 
-from src.pyumilove.character import Character
-from src.pyumilove.raidshadowlegends import Champion, Blessing, RSL
-from src.pyumilove.skill import Skill
+from pyumilove.character import Character
+from pyumilove.raidshadowlegends import Champion, Blessing, RSL
+from pyumilove.skill import Skill
 
 
 class TestRSL(unittest.IsolatedAsyncioTestCase):
@@ -168,7 +168,6 @@ Increases Ally RESIST in all Battles by 80.</p>
 
     async def test_champion_search(self):
         async with RSL() as client:
-
             all_champs = {**self.champs_exact_names, **self.champs_original_names}
             for name in all_champs:
                 with self.subTest(name):
@@ -192,9 +191,7 @@ Increases Ally RESIST in all Battles by 80.</p>
                 client.build_champion_from_soup(no_soup, None)
 
     async def test_blessings(self):
-
         async with RSL() as client:
-
             blessings = client._build_blessings_from_soup(self.blessings_soup)
             blessing = blessings[0]
             self.assertIsInstance(blessings, list)
