@@ -1,4 +1,3 @@
-import asyncio
 from dataclasses import asdict, dataclass
 
 from .character import Character
