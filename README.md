@@ -55,3 +55,39 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 </details>
+
+<details>
+
+<summary>Results in:</summary>
+
+```
+$> python .\sample.py
+Search for a champion ('q' to exit): ultimate deathknight
+
+Ultimate Deathknight - Force - Undead Hordes - Legendary
+--------------------
+Heckler of Legends:
+Attacks 1 enemy. Has a 30% chance of placing a [Provoke] debuff for 1 turn. The chance increases to 55% against Legendary Champions.
+
+Rats Off To Ya (Cooldown: 4 turns):
+Attacks all enemies. Has an 80% chance of placing a 50% [Decrease ATK] debuff for 2 turns. Also has an 80% chance of placing a [Fear] debuff for 1 turn on each Legendary Champion.
+
+Get Comfy Everyone (Cooldown: 5 turns):
+Places a [Shield] buff and a 15% [Continuous Heal] buff on all allies for 2 turns. The value of the [Shield] buff is proportional to this Champion’s DEF.
+
+Too Awesome To Die (Passive):
+Whenever an ally is attacked, has a 100% chance of completely blocking 1 hit, decreasing the damage to zero. This champion will receive that damage instead. The chance decrease to 50% if the attacker is a Boss. Does not work if the attack on the ally was an AoE attack. Whenever an enemy is healed, heals this champion by 20% of that heal.
+
+Didn’t Need ‘Em (Passive):
+Increase this Champion’s HP, DEF, and SPD by 10% for each dead ally.
+
+Aura:
+Increases Ally DEF in all Battles by 30%
+--------------------
+
+Search for a champion ('q' to exit): q
+
+Exiting
+$>
+```
+</details>
